@@ -35,9 +35,11 @@ dash.register_page(__name__, path='/')
 # downloading data containing all individual stock trades for the running year
 #fname = 'dataDT_daash.csv'
 fname = 'ether_24.csv'
+fname = 'eth15m_y24.csv'
+
 df = pd.read_csv(f'../{fname}', parse_dates = ['datetime'], index_col = 'datetime')
 df_l = df.copy()
-df = df[df.index > '08-06-2024']
+df = df[df.index > '01-01-2024']
 
 
 
@@ -84,20 +86,20 @@ layout = html.Div(
                                                 html.H6("Adjust Cutoff to Pause Trading"),
                                                 dcc.Slider(
                                                     id='stop-slider',
-                                                    min=0,
-                                                    max=5,
-                                                    step=1,
-                                                    value=3,
+                                                    min=4,
+                                                    max=10,
+                                                    step=2,
+                                                    value=8,
                                        #             marks={i: str(i) for i in range(0.15, 0.4)},
                                                     ),
                                                 html.Hr(),
                                                 html.H6("Adjust Execution Cost (bps)"),
                                                 dcc.Slider(
                                                     id='cost-slider',
-                                                    min=0,
-                                                    max=0.6,
-                                                    step=0.2,
-                                                    value=0.2,
+                                                    min=1,
+                                                    max=6,
+                                                    step=1,
+                                                    value=5,
                                                     ), 
  #                                               html.Hr(),
                                                 html.H6("Adjust Slippage"),
@@ -311,7 +313,7 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
 
     
     # Generate interactive graphs and card values.
-    figln = hl.generate_line_shaded(dfc, '2024')  
+    figln = hl.generate_line_shaded(dfc, '2024-2025')  
   
     performance = hl.Performance(dfc.pnl_plus)
     wr = hl.WinRate(dfc.pnl_plus)
@@ -320,9 +322,9 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
     avgtr = hl.AvgTrades(dfc)
     sharpe = hl.Sharpe(dfc.pnl_plus)
     pr = hl.ProfitRatio(dfc.pnl_plus)
-    dd = hl.DrawDown(dfc.pnl_plus)
-    bestday = hl.MaxWinDay(dfc.pnl_plus)
-    worstday = hl.MaxLossDay(dfc.pnl_plus)
+    dd = hl.DrawDown(dfc.pnl_ac)
+    bestday = hl.MaxWinDay(dfc.pnl_ac)
+    worstday = hl.MaxLossDay(dfc.pnl_ac)
     
     bars = hl.generate_weekly_bars(dfc)
     bars2 = hl.generate_last20days(dfc)

@@ -59,6 +59,27 @@ def DrawDown(pnl):
     drawdown = drawdownser.min()
     return "{:.2%}".format(drawdown)
 
+# def DrawDown(pnl_series):
+#     """
+#     Calculates the maximum drawdown from a series of PnL values.
+    
+#     Parameters:
+#         pnl_series (pd.Series): A pandas Series of cumulative PnL values.
+        
+#     Returns:
+#         float: The maximum drawdown as a percentage.
+#     """
+#     # Calculate cumulative maximum
+#     cumulative_max = pnl_series.cummax()
+    
+#     # Drawdown: difference between current PnL and cumulative max
+#     drawdown = pnl_series - cumulative_max
+    
+#     # Max drawdown as a percentage
+#     max_dd = (drawdown / cumulative_max).min()
+    
+#     return "{:.2%}".format(max_dd)
+
 def MaxWinDay(pnl):
     """Calculate best day"""
     pnlD = pnl.resample('D').agg({'pnl_plus':'sum'})
@@ -99,10 +120,10 @@ def generate_line_shaded(df, title):
     # This generates a line plot for the YTD performance or capital growth
     # For visual effect we create a shaded fading area underneath the line by introducing shadow traces.
     # The shadowtraces are layers with ever increasing transparency
-    dfD = df.resample('D').agg({'pnl_plus':'sum', 'cr_plus':'last'})
-    dfD = dfD[dfD.pnl_plus != 0]
+    dfD = df.resample('D').agg({'pnl_ac':'sum', 'cr_ac':'last'})
+    dfD = dfD[dfD.pnl_ac != 0]
     x = dfD.index
-    y = dfD.cr_plus
+    y = dfD.cr_ac
     
     offset = 0.025
     y_shadow = y-0.03 * (y-1)
@@ -390,7 +411,7 @@ def generate_gauge_yoytarget_model(dfg):
     start_date = str(year) + '-01-01'
     end_date = str(year) + '-12-31'   
     dfc = dfg[(dfg.index >= start_date) & (dfg.index <= end_date)]
-    cur_profit = dfc['pnl_plus'].sum() 
+    cur_profit = dfc['pnl_ac'].sum() 
     
     profit_target = target 
     
@@ -426,7 +447,7 @@ def generate_gauge_qoqtarget_model(dfg):
     start_date = '2025-01-01'
     end_date =  '2025-04-01'   
     dfc = dfg[(dfg.index > start_date) & (dfg.index < end_date)]
-    cur_profit = dfc['pnl_plus'].sum() 
+    cur_profit = dfc['pnl_ac'].sum() 
     
     profit_target = 0.3 
     
@@ -459,10 +480,10 @@ def generate_gauge_qoqtarget_model(dfg):
 def generate_gauge_momtarget_model(dfg):
     
     #get current and previous years sales
-    start_date = '2025-01-01'
-    end_date =  '2025-02-01'   
+    start_date = '2025-02-01'
+    end_date =  '2025-03-01'   
     dfc = dfg[(dfg.index > start_date) & (dfg.index < end_date)]
-    cur_profit = dfc['pnl_plus'].sum() 
+    cur_profit = dfc['pnl_ac'].sum() 
     
     profit_target = 0.1
     
@@ -529,7 +550,7 @@ def generate_gauge_multimodel(df):
                         paper_bgcolor = '#FFFFFF',
                         font_color = '#025E70',
                         font_family = 'arial',
-                        title_text=f"<b>Profit Targets 2024</b>",
+                        title_text=f"<b>Profit Targets 2025</b>",
                         title_x=0.5,  # Center the main title
                         title_font=dict(
  #               family="Arial",  # Specify the font family
