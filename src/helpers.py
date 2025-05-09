@@ -120,10 +120,10 @@ def generate_line_shaded(df, title):
     # This generates a line plot for the YTD performance or capital growth
     # For visual effect we create a shaded fading area underneath the line by introducing shadow traces.
     # The shadowtraces are layers with ever increasing transparency
-    dfD = df.resample('D').agg({'pnl_ac':'sum', 'cr_ac':'last'})
-    dfD = dfD[dfD.pnl_ac != 0]
+    dfD = df.resample('D').agg({'pnl_plus':'sum', 'cr_plus':'last'})
+    dfD = dfD[dfD.pnl_plus != 0]
     x = dfD.index
-    y = dfD.cr_ac
+    y = dfD.cr_plus
     
     offset = 0.025
     y_shadow = y-0.03 * (y-1)
@@ -404,20 +404,21 @@ def generate_QDDtable(df):
     return dftable    
 
 def generate_gauge_yoytarget_model(dfg):
-    year = 2025
-    target = 1.20
+    #year = 2025
+    target = 1
     
     #get current and previous years sales
-    start_date = str(year) + '-01-01'
-    end_date = str(year) + '-12-31'   
-    dfc = dfg[(dfg.index >= start_date) & (dfg.index <= end_date)]
+    #start_date = str(year) + '-01-01'
+    #end_date = str(year) + '-12-31'   
+    #dfc = dfg[(dfg.index >= start_date) & (dfg.index <= end_date)]
+    dfc = dfg
     cur_profit = dfc['pnl_ac'].sum() 
     
     profit_target = target 
     
-    if cur_profit/profit_target < 0.75:
+    if cur_profit/profit_target < 0.6 * target:
         bar_color = '#BF1B3C'
-    elif cur_profit/profit_target > 1.2:
+    elif cur_profit/profit_target > target:
         bar_color = '#3B0B3F'
     else:
         bar_color = '#6B1224'
@@ -430,7 +431,7 @@ def generate_gauge_yoytarget_model(dfg):
        mode = "gauge+number",   # also including the delta to show how far off the target we are
 #       title = {'text': f'{figln_title} Sales vs Target'},
        delta = {'reference':  profit_target, 'valueformat': '.2%'},
-       gauge = {'axis': {'range': [None, 1.35 * target], 'tickformat':',.2%', 'tickvals':[0,0.3,0.6,1.2, 1.5]},
+       gauge = {'axis': {'range': [None, 1.35 * target], 'tickformat':',.2%', 'tickvals':[0,0.25,0.5,1, 1.3]},
                 'bar': {'color': bar_color},  
         #        'shape':'angular',
                 'steps' : [{'range': [0, 1.35 * target], 'color': '#FFFFFF'},],
@@ -550,7 +551,7 @@ def generate_gauge_multimodel(df):
                         paper_bgcolor = '#FFFFFF',
                         font_color = '#025E70',
                         font_family = 'arial',
-                        title_text=f"<b>Profit Targets 2025</b>",
+                        title_text=f"<b>Profit Targets</b>",
                         title_x=0.5,  # Center the main title
                         title_font=dict(
  #               family="Arial",  # Specify the font family
